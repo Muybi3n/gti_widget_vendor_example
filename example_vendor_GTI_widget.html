@@ -115,7 +115,7 @@
                     <thead class="bg-slate-100 text-xs text-slate-500 uppercase tracking-wider">
                         <tr>
                             <th class="table-cell">URL/IP</th>
-                            <th class="table-cell">GTI Report / Score</th>
+                            <th class="table-cell">GTI Score</th>
                             <th class="table-cell">IOC Ingest Time</th>
                             <th class="table-cell">First Seen</th>
                             <th class="table-cell">Last Seen</th>
@@ -139,7 +139,7 @@
                      <thead class="bg-slate-100 text-xs text-slate-500 uppercase tracking-wider">
                         <tr>
                             <th class="table-cell">FILE HASH (SHA256)</th>
-                            <th class="table-cell">GTI Report / Score</th>
+                            <th class="table-cell">GTI Score</th>
                             <th class="table-cell">IOC Ingest Time</th>
                             <th class="table-cell">First Seen</th>
                             <th class="table-cell">Last Seen</th>
@@ -155,10 +155,20 @@
 
     <!-- GTI Widget Slider -->
     <div id="gtiSlider" style="width: 50vw;" class="fixed top-0 right-0 h-full bg-white shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out z-50 flex flex-col border-l border-slate-300">
+        <!-- Google Color Banner -->
+        <div class="flex h-1.5 w-full flex-shrink-0">
+            <div class="w-1/4 bg-blue-500"></div>
+            <div class="w-1/4 bg-red-500"></div>
+            <div class="w-1/4 bg-yellow-500"></div>
+            <div class="w-1/4 bg-green-500"></div>
+        </div>
         <div id="resizeHandle"></div>
-        <button id="closeGtiSlider" class="absolute top-2 right-3 text-slate-500 hover:text-slate-900 text-3xl font-bold z-10">&times;</button>
-        <div id="gtiWidgetContainer" class="flex-grow pt-8 overflow-auto">
-            <!-- Iframe will be added by JS -->
+        <!-- Main content area for the slider -->
+        <div class="relative flex-grow">
+            <button id="closeGtiSlider" class="absolute top-2 right-3 text-slate-400 hover:text-slate-800 text-3xl font-bold z-10">&times;</button>
+            <div id="gtiWidgetContainer" class="w-full h-full overflow-auto">
+                <!-- Iframe will be added by JS -->
+            </div>
         </div>
     </div>
     <!-- Overlay for when slider is open -->
@@ -273,7 +283,7 @@
                         let colorClass = 'bg-green-200 text-green-800'; // Score is 1 or less
                         if (score >= 30) {
                             colorClass = 'bg-red-200 text-red-800';
-                        } else if (score >= 2) {
+                        } else if (score >= 2) { // Scores from 2 to 29 are orange
                             colorClass = 'bg-amber-200 text-amber-800';
                         }
                         scoreCell.innerHTML = `<a href="#" class="gti-trigger inline-block"><span class="text-xs font-bold px-2 py-1 rounded-full ${colorClass}">${score}</span></a>`;
