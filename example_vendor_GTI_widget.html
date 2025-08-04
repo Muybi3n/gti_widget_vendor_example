@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your_Product_Detections - GTI Widget Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9; /* bg-slate-100 */
+        }
+        .table-cell {
+            padding: 0.75rem 1rem;
+            vertical-align: middle;
+        }
+        .indicator-link {
+            color: #2563eb; /* text-blue-600 */
+            cursor: pointer;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .indicator-link:hover {
+            text-decoration: underline;
+        }
+        .gti-logo-link {
+             cursor: pointer;
+        }
+        .gti-logo {
+            width: 1.25rem;
+            height: 1.25rem;
+            transition: transform 0.2s;
+        }
+        .gti-logo-link:hover .gti-logo {
+            transform: scale(1.1);
+        }
+        #configToggleBtn svg {
+            transition: transform 0.3s ease;
+        }
+        .config-closed #configToggleBtn svg {
+            transform: rotate(-90deg);
+        }
+        @keyframes pulse {
+            50% { opacity: .6; }
+        }
+        .status-orange {
+            animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        #resizeHandle {
+            position: absolute;
+            left: -5px;
+            top: 0;
+            height: 100%;
+            width: 10px;
+            cursor: col-resize;
+            z-index: 100;
+        }
+        #resizeHandle:hover {
+             background-color: rgba(79, 70, 229, 0.5); /* indigo-600 with opacity */
+        }
+    </style>
+</head>
+<body class="text-slate-800 overflow-x-hidden">
+
+    <div id="mainContent" class="container mx-auto p-4 md:p-8 transition-all duration-300">
+        <!-- Header -->
+        <header class="mb-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Your_Product_Detections</h1>
+                    <p class="text-slate-500 mt-1">GTI Widget Demo</p>
+                </div>
+                 <div class="text-xs text-slate-500 text-right">
+                    <p>Data as of: <span class="font-medium text-slate-600">Aug 4, 2025</span></p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Configuration Section -->
+        <div id="configSection" class="bg-white rounded-lg shadow-md p-4 border border-slate-200 mb-8 config-closed">
+            <div id="configHeader" class="flex justify-between items-center cursor-pointer">
+                <h2 class="text-lg font-semibold text-slate-800 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 text-amber-500"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+                    Configuration
+                </h2>
+                <div class="flex items-center gap-3">
+                    <div id="apiKeyStatus" class="w-4 h-4 rounded-full transition-colors" title="API Key Status"></div>
+                    <button id="configToggleBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                </div>
+            </div>
+            <div id="configContent" class="pt-4 mt-4 border-t border-slate-200 hidden">
+                <div class="space-y-4">
+                    <div>
+                        <label for="gtiApiKey" class="block text-sm font-medium text-slate-700 mb-1">Google Threat Intelligence API Key</label>
+                        <input type="password" id="gtiApiKey" class="block w-full rounded-md border-slate-300 bg-slate-50 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-slate-900" placeholder="Enter your GTI API Key">
+                    </div>
+                    <div class="text-right">
+                        <button id="saveConfigBtn" class="text-sm bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-indigo-500">Verify & Save API Key</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- URL Matches Table -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8 border border-slate-200">
+            <h2 class="text-xl font-semibold p-4 border-b border-slate-200 text-slate-800 flex items-center">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 text-blue-500"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg>
+                3 URL MATCHES
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-slate-100 text-xs text-slate-500 uppercase tracking-wider">
+                        <tr>
+                            <th class="table-cell">URL/IP</th>
+                            <th class="table-cell">GTI Report / Score</th>
+                            <th class="table-cell">IOC Ingest Time</th>
+                            <th class="table-cell">First Seen</th>
+                            <th class="table-cell">Last Seen</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200" id="url-iocs-body">
+                         <!-- Rows will be dynamically injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Files Matches Table -->
+        <div class="bg-slate-50 rounded-lg shadow-md overflow-hidden mb-8 border border-slate-200">
+            <h2 class="text-xl font-semibold p-4 border-b border-slate-200 text-slate-800 flex items-center">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 text-green-500"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                3 FILE HASH MATCHES
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                     <thead class="bg-slate-100 text-xs text-slate-500 uppercase tracking-wider">
+                        <tr>
+                            <th class="table-cell">FILE HASH (SHA256)</th>
+                            <th class="table-cell">GTI Report / Score</th>
+                            <th class="table-cell">IOC Ingest Time</th>
+                            <th class="table-cell">First Seen</th>
+                            <th class="table-cell">Last Seen</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200" id="file-iocs-body">
+                       <!-- Rows will be dynamically injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- GTI Widget Slider -->
+    <div id="gtiSlider" style="width: 50vw;" class="fixed top-0 right-0 h-full bg-white shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out z-50 flex flex-col border-l border-slate-300">
+        <div id="resizeHandle"></div>
+        <button id="closeGtiSlider" class="absolute top-2 right-3 text-slate-500 hover:text-slate-900 text-3xl font-bold z-10">&times;</button>
+        <div id="gtiWidgetContainer" class="flex-grow pt-8 overflow-auto">
+            <!-- Iframe will be added by JS -->
+        </div>
+    </div>
+    <!-- Overlay for when slider is open -->
+    <div id="sliderOverlay" class="fixed inset-0 bg-black bg-opacity-40 hidden z-40 transition-opacity duration-300"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const gtiApiKeyInput = document.getElementById('gtiApiKey');
+            const saveConfigBtn = document.getElementById('saveConfigBtn');
+            const gtiSlider = document.getElementById('gtiSlider');
+            const closeGtiSliderBtn = document.getElementById('closeGtiSlider');
+            const gtiWidgetContainer = document.getElementById('gtiWidgetContainer');
+            const sliderOverlay = document.getElementById('sliderOverlay');
+            const configSection = document.getElementById('configSection');
+            const configHeader = document.getElementById('configHeader');
+            const configContent = document.getElementById('configContent');
+            const apiKeyStatus = document.getElementById('apiKeyStatus');
+            const resizeHandle = document.getElementById('resizeHandle');
+            const mainContent = document.getElementById('mainContent');
+            const urlIocsBody = document.getElementById('url-iocs-body');
+            const fileIocsBody = document.getElementById('file-iocs-body');
+            
+            let isKeyVerified = false;
+
+            // --- Static Data ---
+            const urlIocs = [
+                { id: "https://skyslope.com@securedatas.info/verification/verifyuridentityonline?email=info@isrreports.com", ingest: "30 Mins Ago", first: "5 Days Ago", last: "5 Days Ago" },
+                { id: "http://tracking.mimeeting.net/tracking/botclick?msgid=f1QnWpG_gxeGDySH5dpYYQ2&c=1952454385774808418", ingest: "1 Hour Ago", first: "1 Hour Ago", last: "1 Hour Ago" },
+                { id: "https://196.251.117.226:7117/gate/", ingest: "14 Hours Ago", first: "3 Hours Ago", last: "1 Day Ago" }
+            ];
+
+            const fileIocs = [
+                { id: "9432b623f19a6980256123fbc4c5c6f27be5fbfb8ea67ee577af6d651ebc3649", ingest: "2 Hours Ago", first: "13 Days Ago", last: "13 Days Ago" },
+                { id: "1c783c253435b450cbd2eeb01830eca20d71145bd63c1cdbe655d88f4d65143d", ingest: "1 Hours Ago", first: "2 Day Ago", last: "2 Hours Ago" },
+                { id: "72b5838dfa34b7d405d664c48e9b4aee72b4e10ac5f9f4cc124045dcd6d311a8", ingest: "1 Day Ago", first: "1 Month Ago", last: "1 Month Ago" }
+            ];
+
+            // --- UI Handlers ---
+            const createIocRow = (ioc) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-100/60 transition-colors duration-200';
+                tr.setAttribute('data-indicator', ioc.id);
+                
+                tr.innerHTML = `
+                    <td class="table-cell">
+                        <a href="#" class="indicator-link gti-trigger">${ioc.id}</a>
+                    </td>
+                    <td class="table-cell score-cell">
+                        <span class="text-xs font-semibold px-2 py-1 rounded-full bg-slate-200 text-slate-600">...</span>
+                    </td>
+                    <td class="table-cell">${ioc.ingest}</td>
+                    <td class="table-cell">${ioc.first}</td>
+                    <td class="table-cell">${ioc.last}</td>
+                `;
+                return tr;
+            };
+
+            const populateTables = () => {
+                urlIocs.forEach(ioc => urlIocsBody.appendChild(createIocRow(ioc)));
+                fileIocs.forEach(ioc => fileIocsBody.appendChild(createIocRow(ioc)));
+            };
+
+            const setStatusIndicator = (status, message) => {
+                apiKeyStatus.classList.remove('bg-red-500', 'bg-amber-500', 'bg-green-500', 'status-orange');
+                let colorClass = '';
+                switch (status) {
+                    case 'verified': colorClass = 'bg-green-500'; isKeyVerified = true; break;
+                    case 'verifying': colorClass = 'bg-amber-500'; apiKeyStatus.classList.add('status-orange'); isKeyVerified = false; break;
+                    default: colorClass = 'bg-red-500'; isKeyVerified = false; break;
+                }
+                apiKeyStatus.classList.add(colorClass);
+                apiKeyStatus.title = message;
+            };
+
+            const toggleConfig = () => {
+                configContent.classList.toggle('hidden');
+                configSection.classList.toggle('config-closed');
+            };
+            configHeader.addEventListener('click', toggleConfig);
+
+            function showCustomAlert(message, type = 'info') {
+                document.querySelectorAll('.custom-alert').forEach(e => e.remove());
+                const alertColors = { success: 'bg-green-500 text-white', error: 'bg-red-500 text-white' };
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `custom-alert fixed top-5 right-5 py-2 px-4 rounded-lg shadow-lg text-sm z-50 ${alertColors[type]}`;
+                alertDiv.textContent = message;
+                document.body.appendChild(alertDiv);
+                setTimeout(() => { alertDiv.remove(); }, 4000);
+            }
+
+            // --- API Key & Widget Logic ---
+            const enrichRow = async (row, apiKey) => {
+                const indicator = row.dataset.indicator;
+                const scoreCell = row.querySelector('.score-cell');
+                const endpoint = `https://www.virustotal.com/api/v3/gtiwidget?query=${encodeURIComponent(indicator)}`;
+                
+                try {
+                    const response = await fetch(endpoint, {
+                        headers: { 'x-apikey': apiKey, 'x-tool': 'Your_Product-siem-demo' }
+                    });
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
+                    const data = await response.json();
+                    
+                    if (data.data && data.data.url) {
+                        row.setAttribute('data-widget-url', data.data.url);
+                    }
+
+                    let score = data.data?.gti_assessment?.threat_score?.value;
+                    if (score !== undefined) {
+                        let colorClass = 'bg-green-200 text-green-800'; // Score is 1 or less
+                        if (score >= 30) {
+                            colorClass = 'bg-red-200 text-red-800';
+                        } else if (score >= 2) {
+                            colorClass = 'bg-amber-200 text-amber-800';
+                        }
+                        scoreCell.innerHTML = `<a href="#" class="gti-trigger inline-block"><span class="text-xs font-bold px-2 py-1 rounded-full ${colorClass}">${score}</span></a>`;
+                    } else {
+                        scoreCell.innerHTML = `<span class="text-xs font-semibold px-2 py-1 rounded-full bg-slate-200 text-slate-600">N/A</span>`;
+                    }
+                } catch (error) {
+                    console.error(`Enrichment failed for ${indicator}:`, error);
+                    scoreCell.innerHTML = `<span class="text-xs font-semibold px-2 py-1 rounded-full bg-gray-200 text-gray-600" title="${error.message}">Error</span>`;
+                }
+            };
+            
+            const enrichAllRows = (apiKey) => {
+                document.querySelectorAll('tr[data-indicator]').forEach(row => {
+                    enrichRow(row, apiKey);
+                });
+            };
+
+            const openGtiSlider = (indicator, widgetUrl) => {
+                if (!isKeyVerified) {
+                    showCustomAlert('A valid GTI API Key is required.', 'error');
+                    if (configContent.classList.contains('hidden')) toggleConfig();
+                    gtiApiKeyInput.focus();
+                    return;
+                }
+                
+                if (!widgetUrl) {
+                    showCustomAlert('Report URL not available. It might still be loading.', 'error');
+                    return;
+                }
+                
+                gtiSlider.classList.remove('translate-x-full');
+                sliderOverlay.classList.remove('hidden');
+                mainContent.style.paddingRight = `${gtiSlider.offsetWidth}px`;
+
+                gtiWidgetContainer.innerHTML = '';
+                const iframe = document.createElement('iframe');
+                iframe.id = 'gtiWidget';
+                iframe.className = 'w-full h-full border-0';
+                iframe.sandbox = 'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms';
+                gtiWidgetContainer.appendChild(iframe);
+                iframe.src = widgetUrl;
+            };
+
+            const closeSlider = () => {
+                gtiSlider.classList.add('translate-x-full');
+                sliderOverlay.classList.add('hidden');
+                mainContent.style.paddingRight = '';
+                gtiWidgetContainer.innerHTML = '';
+            };
+
+            const verifyApiKey = async (apiKey) => {
+                if (!apiKey) {
+                    setStatusIndicator('error', 'API Key not provided.');
+                    return false;
+                }
+                setStatusIndicator('verifying', 'Verifying API Key...');
+                try {
+                    const response = await fetch(`https://www.virustotal.com/api/v3/ip_addresses/8.8.8.8`, {
+                        headers: { 'x-apikey': apiKey }
+                    });
+                    if (response.ok) {
+                        setStatusIndicator('verified', 'API Key is valid and saved.');
+                        localStorage.setItem('gti_apiKey', apiKey);
+                        showCustomAlert('API Key verified and saved!', 'success');
+                        if (!configContent.classList.contains('hidden')) toggleConfig();
+                        enrichAllRows(apiKey);
+                        return true;
+                    } else {
+                         setStatusIndicator('error', 'API Key is invalid.');
+                         localStorage.removeItem('gti_apiKey');
+                         isKeyVerified = false;
+                         showCustomAlert('Invalid API Key. Please try again.', 'error');
+                         return false;
+                    }
+                } catch (error) {
+                    console.error("API Key verification failed:", error);
+                    setStatusIndicator('error', 'Could not verify API Key.');
+                    showCustomAlert('An error occurred during verification.', 'error');
+                    return false;
+                }
+            };
+
+            // --- Event Listeners Setup ---
+            saveConfigBtn.addEventListener('click', () => {
+                const apiKey = gtiApiKeyInput.value.trim();
+                verifyApiKey(apiKey);
+            });
+
+            closeGtiSliderBtn.addEventListener('click', closeSlider);
+            sliderOverlay.addEventListener('click', closeSlider);
+            
+            document.body.addEventListener('click', function(event) {
+                const trigger = event.target.closest('.gti-trigger');
+                if (trigger) {
+                    event.preventDefault();
+                    const row = trigger.closest('tr[data-indicator]');
+                    if (row) {
+                        const indicator = row.dataset.indicator;
+                        const widgetUrl = row.dataset.widgetUrl;
+                        openGtiSlider(indicator, widgetUrl);
+                    }
+                }
+            });
+
+            window.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && !gtiSlider.classList.contains('translate-x-full')) {
+                    closeSlider();
+                }
+            });
+
+            let isResizing = false;
+            resizeHandle.addEventListener('mousedown', function(e) {
+                isResizing = true;
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+
+                const mouseMoveHandler = (e) => {
+                    if (!isResizing) return;
+                    let newWidth = window.innerWidth - e.clientX;
+                    const minWidth = window.innerWidth * 0.25;
+                    const maxWidth = window.innerWidth * 0.75;
+                    newWidth = Math.max(minWidth, Math.min(newWidth, maxWidth));
+                    gtiSlider.style.width = `${newWidth}px`;
+                    mainContent.style.paddingRight = `${newWidth}px`;
+                };
+
+                const mouseUpHandler = () => {
+                    isResizing = false;
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+                    document.removeEventListener('mousemove', mouseMoveHandler);
+                    document.removeEventListener('mouseup', mouseUpHandler);
+                };
+
+                document.addEventListener('mousemove', mouseMoveHandler);
+                document.addEventListener('mouseup', mouseUpHandler);
+            });
+            
+            // --- Initial Load ---
+            const init = async () => {
+                populateTables();
+                const savedApiKey = localStorage.getItem('gti_apiKey');
+                if (savedApiKey) {
+                    gtiApiKeyInput.value = savedApiKey;
+                    await verifyApiKey(savedApiKey);
+                } else {
+                    setStatusIndicator('error', 'API Key not provided.');
+                }
+            };
+            
+            init();
+        });
+    </script>
+</body>
+</html>
